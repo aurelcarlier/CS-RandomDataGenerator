@@ -1,0 +1,45 @@
+<h1>Random data generator for one-way carsharing systems</h1>
+<%= link_to 'Lien vers le générateur', gen_path %>
+
+<h2>Description</h2>
+<p>The generator produces time-dependant one-way carsharing demand among a set on randomly positioned stations. The provided data are used to evaluate the developed models proposed in the next chapters. We hope that it could help the research community, stimulate system design implementations and provide benchmark data to compare methodologies.</p>
+
+<h2>Assumptions</h2>
+<p>Some data produced by the generator are time-dependant. The purpose of the generator is to provide temporal data during an average day. Carsharing demands and travel times are then defined over a 24 hours period, segmented into T ∈ N discrete time-steps. The total number of time-steps is user-settable. It can vary from 24 to 1440, representing respectively a time-step period of one hour and one minute.</p>
+<p>The vehicle speed is assumed constant during a trip. Although congestion is not directly considered in the model, travel times are penalize during rush hours. Two weight factors (one for the morning, one for the evening) allow to extend any trip duration if it is performed during defined time windows.</p>
+<p>Finally, it is also assumed that the generator neglects the time needed for some operations. For instance, the time needed to park a vehicle, borrow it or plug it into a charging point in the case of electric vehicles are not considered.</p>
+
+<h2>Station positioning</h2>
+<p>The first phase positions S ∈ N carsharing stations within a given territory. The area is modelled as a square, only defined by its side length expressed in metres. Then, two distinct methods, called respectively the uniform method and the centroid method, spread the stations among the territory. The uniform method merely positions randomly the stations, assigning uniform random values to the station’s coordinates. The centroid method positions stations over two distinct zones: a central area (in general representing the center of the city) included in a larger one (representing the suburbs area), both defined as a square. The generation algorithm takes two additional parameters: the percentage of total area the center must represent and the probability that a station is contained in the center. Once the geographic division is made, every station is then positioned randomly in the area where it belongs. Finally, the maximum size for each station is randomly generated using a discrete uniform distribution over an integer interval given by the user.</p>
+
+<h2>Demand generation</h2>
+
+<figure><%= image_tag "rushes2.png", alt: "travel_demand_time_rushes", id: "img_rushes", class: "right_float_picture"%>
+</figure>
+
+<p>The second phase generates randomly D ∈ N demands over time between stations.</p>
+
+<p>In a first step, the generator schedules and distributes randomly each request over time. The random demand distribution can be specified through a dedicated frame where the user can tune every level demand on an hourly basis. Because levels are considered relative to each other, their exact value are not relevant. The random distribution is obtained normalizing all the values. In practice, most profile distributions are very similar to the following picture, where two noticeable picks during morning and evening demarcate the symmetrical mobility pattern in dense areas.</p>
+
+<p>In a second step, the generator identifies origins and destinations of each temporal demands. Usually, in urban context, the demand goes globally in the same direction: from the suburbs to the center during the morning and from the center to the suburbs the evening.	Both morningn and evening rush hour slots (traffic peaks) are settable. As depicted in the picture, the morning rush is usually between 7 and 9 o’clock whereas the evening rush is between 15 and 19 o’clock.</p>
+
+<p>A fixed demand proportion during rushes can be specified by the user. The generator finally calculate the origin and destination stations with respect to the departure time of each demand.	The travel time is deducted from the distance between stations and the average car speed. As stated previously, the time is penalized in case of traffic peaks.</p>
+
+<h2>Outputs</h2>
+<p>The data produced by the generator are saved as XML files. Two markup sets hold all the required information. The first one, dedicated to stations, reports the following data:
+	<ul>
+		<li>id: the station ID,</li>
+		<li>xPos, yPos: the station geographical coordinates,</li>
+		<li>maxSize: the maximum number of available parking lots in the station.</li>
+	</ul>
+	The second set, dedicated to demands, includes the following data:
+	<ul>
+		<li>id: the demand ID,</li>
+		<li>idsOrigin, idsDestination: The IDs of departure and arrival stations,</li>
+		<li>nbDemand: the number of individuals requested a vehicle,</li>
+		<li>departureTime, arrivalTime (expressed in number of time-steps): time of the request and
+time of the expected arrival at destination.</li>
+	</ul>
+</p>
+
+

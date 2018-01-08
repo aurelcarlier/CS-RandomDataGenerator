@@ -1,0 +1,79 @@
+<h1>Implémentation du générateur</h1>
+
+<%= form_with scope: :gen, url: gen_path, local: true do |form| %>
+	<p>Generation method: 
+		<%= form.radio_button :generationMethod, 'Centroïd', checked: true %>
+		<%= label :generationMethod, 'Centroïd' %>
+		<%= form.radio_button :generationMethod, 'Uniform' %>
+		<%= label :generationMethod, 'Uniform' %>
+	</p>
+	<p>Number of stations : <%= form.number_field :nbStations, min: 1, step: 1, value: 10%></p>
+	<p>Parking range (# parking slots): 
+		<%= form.number_field :parkingRange_L, min: 1, step: 1, value: 6 %>
+		and
+		<%= form.number_field :parkingRange_U, min: 1, step: 1, value: 10 %>
+	</p>
+	<p>Number of demand (# requests): <%= form.number_field :nbDemands, min: 1, step: 1, value: 500 %></p>
+	<p>Time step (min): <%= form.number_field :timeStep, min: 1, max:60, step: 1, value: 10 %></p>
+	<p>Area length side (m): <%= form.number_field :areaLengthSide, min: 1000, step: 1, value: 100000 %></p>
+	<p>Average car speed (km/h): <%= form.number_field :averageCarSpeed, min: 1, step: 1, value: 40 %></p>
+	<p>Maximum trip distance (m): <%= form.number_field :maxTripDistance, min: 1000, step: 1, value: 60000 %></p>
+	<p>Centroïd area dimension (% of total area): <%= form.number_field :centroidAreaDimension, min: 1, step: 1, value: 10 %></p>
+	<p>Density in the centroïd area (%): <%= form.number_field :centroidDensity, in: 1..100, step: 1, value: 35 %></p>
+	<p>Demand distribution :<br />
+		<table>
+			<tr>
+				<% for i in 0..11 do %>
+					<td><%=i%>h</td>
+				<% end %>
+			</tr>
+			<tr>
+				<td><%= form.number_field :demandDistrib_0, class: "demDistrib", min: 0, max: 100, step: 1, value: 5 %></td>
+				<td><%= form.number_field :demandDistrib_1, class: "demDistrib", min: 0, max: 100, step: 1, value: 5 %></td>
+				<td><%= form.number_field :demandDistrib_2, class: "demDistrib", min: 0, max: 100, step: 1, value: 5 %></td>
+				<td><%= form.number_field :demandDistrib_3, class: "demDistrib", min: 0, max: 100, step: 1, value: 7 %></td>
+				<td><%= form.number_field :demandDistrib_4, class: "demDistrib", min: 0, max: 100, step: 1, value: 10 %></td>
+				<td><%= form.number_field :demandDistrib_5, class: "demDistrib", min: 0, max: 100, step: 1, value: 15 %></td>
+				<td><%= form.number_field :demandDistrib_6, class: "demDistrib", min: 0, max: 100, step: 1, value: 20 %></td>
+				<td><%= form.number_field :demandDistrib_7, class: "demDistrib", min: 0, max: 100, step: 1, value: 50 %></td>
+				<td><%= form.number_field :demandDistrib_8, class: "demDistrib", min: 0, max: 100, step: 1, value: 80 %></td>
+				<td><%= form.number_field :demandDistrib_9, class: "demDistrib", min: 0, max: 100, step: 1, value: 70 %></td>
+				<td><%= form.number_field :demandDistrib_10, class: "demDistrib", min: 0, max: 100, step: 1, value: 60 %></td>
+				<td><%= form.number_field :demandDistrib_11, class: "demDistrib", min: 0, max: 100, step: 1, value: 65 %></td>
+			</tr>
+			<tr>
+				<% for i in 12..23 do %>
+					<td><%=i%>h</td>
+				<% end %>
+			</tr>
+			<tr>
+				<td><%= form.number_field :demandDistrib_12, class: "demDistrib", min: 0, max: 100, step: 1, value: 70 %></td>
+				<td><%= form.number_field :demandDistrib_13, class: "demDistrib", min: 0, max: 100, step: 1, value: 63 %></td>
+				<td><%= form.number_field :demandDistrib_14, class: "demDistrib", min: 0, max: 100, step: 1, value: 55 %></td>
+				<td><%= form.number_field :demandDistrib_15, class: "demDistrib", min: 0, max: 100, step: 1, value: 73 %></td>
+				<td><%= form.number_field :demandDistrib_16, class: "demDistrib", min: 0, max: 100, step: 1, value: 90 %></td>
+				<td><%= form.number_field :demandDistrib_17, class: "demDistrib", min: 0, max: 100, step: 1, value: 85 %></td>
+				<td><%= form.number_field :demandDistrib_18, class: "demDistrib", min: 0, max: 100, step: 1, value: 80 %></td>
+				<td><%= form.number_field :demandDistrib_19, class: "demDistrib", min: 0, max: 100, step: 1, value: 53 %></td>
+				<td><%= form.number_field :demandDistrib_20, class: "demDistrib", min: 0, max: 100, step: 1, value: 25 %></td>
+				<td><%= form.number_field :demandDistrib_21, class: "demDistrib", min: 0, max: 100, step: 1, value: 18 %></td>
+				<td><%= form.number_field :demandDistrib_22, class: "demDistrib", min: 0, max: 100, step: 1, value: 10 %></td>
+				<td><%= form.number_field :demandDistrib_23, class: "demDistrib", min: 0, max: 100, step: 1, value: 8 %></td>
+			</tr>
+		</table>
+	</p>
+	<p>Morning rush (sub -> center) time slot (h): 
+		<%= form.number_field :morningRushTimeSlot_L, min: 1, step: 1, value: 7 %>
+		and
+		<%= form.number_field :morningRushTimeSlot_U, min: 1, step: 1, value: 9 %>
+	</p>
+	<p>Demand proportion during morning rush (%): <%= form.number_field :demandProportion_MR, in: 0..100, step: 1, value: 80 %></p>
+	<p>Evening rush (center -> sub) time slot (h): 
+		<%= form.number_field :eveningRushTimeSlot_L, min: 12, step: 1, value: 15 %>
+		and
+		<%= form.number_field :eveningRushTimeSlot_U, min: 12, step: 1, value: 19 %>
+	</p>
+	<p>Demand proportion during evening rush (%): <%= form.number_field :demandProportion_ER, in: 0..100, step: 1, value: 60 %></p>
+	<p>Time penalty during rush hours (%): <%= form.number_field :timePenalty, min: 0, step: 1, value: 160 %></p>
+	<p><%= form.submit "Generate!" %></p>
+<% end %>
