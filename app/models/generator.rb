@@ -5,6 +5,8 @@ require 'nokogiri'
 
 class Generator
 					 
+	attr_accessor :inputs
+	
 	def initialize(gen_inputs)
 	
 		@inputs = gen_inputs
