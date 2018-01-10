@@ -1,81 +1,40 @@
-
-
 class GeneratorInput
 
-	attr_accessor 	 :generationMethod,
-					 :nbStations,
-					 :parkingRange_L,
-					 :parkingRange_U,
-					 :nbDemands,
-					 :timeStep,
-					 :areaLengthSide,
-					 :averageCarSpeed,
-					 :maxTripDistance,
-					 :centroidAreaDimension,
-					 :centroidDensity,
-					 :morningRushTimeSlot_L,
-					 :morningRushTimeSlot_U,
-					 :demandProportion_MR,
-					 :eveningRushTimeSlot_L,
-					 :eveningRushTimeSlot_U,
-					 :demandProportion_ER,
-					 :timePenalty,
-					 :demand
-					 
-					 
-	def initialize(params)
-	
-		# Integrity testing with string and integer parameters
-		# strings:
-		string_params = ["generationMethod"]
-		for param in string_params do
-			raise TypeError, 'Argument is not a String' unless params[param].is_a? String
-		end
-		
-		# integers:
-		integer_params = ["nbStations", "parkingRange_L", "parkingRange_U", "nbDemands", "timeStep", "areaLengthSide", "averageCarSpeed", "maxTripDistance", "centroidAreaDimension", "centroidDensity", "morningRushTimeSlot_L", "morningRushTimeSlot_U", "demandProportion_MR", "eveningRushTimeSlot_L", "eveningRushTimeSlot_U", "demandProportion_ER", "timePenalty"]
-		for param in integer_params do
-			raise TypeError, 'Argument is not an Integer' unless Integer(params[param]).is_a? Integer
-		end
-		
-		# Variables setting
-		@generationMethod = params["generationMethod"]
-		
-		@nbStations = params["nbStations"].to_i
-		@parkingRange_L = params["parkingRange_L"].to_i
-		@parkingRange_U = params["parkingRange_U"].to_i
-		
-		@nbDemands = params["nbDemands"].to_i
-		
-		@timeStep = params["timeStep"].to_i
-		
-		@areaLengthSide = params["areaLengthSide"].to_i
-		@averageCarSpeed = params["averageCarSpeed"].to_i
-		@maxTripDistance = params["maxTripDistance"].to_i
-		@centroidAreaDimension = params["centroidAreaDimension"].to_i
-		@centroidDensity = params["centroidDensity"].to_i
-		
-		@morningRushTimeSlot_L = params["morningRushTimeSlot_L"].to_i
-		@morningRushTimeSlot_U = params["morningRushTimeSlot_U"].to_i
-		@demandProportion_MR = params["demandProportion_MR"].to_i
-		
-		@eveningRushTimeSlot_L = params["eveningRushTimeSlot_L"].to_i
-		@eveningRushTimeSlot_U = params["eveningRushTimeSlot_U"].to_i
-		@demandProportion_ER = params["demandProportion_ER"].to_i
-		
-		@timePenalty = params["timePenalty"].to_f / 100
-		
-		@demand = init_demand(params)
-		
-	end
-	
-	# Build the demand from the parameters
-	def init_demand(params)
-		demand = Hash.new
-		for i in 0..23
-			demand[i] = Integer(params["demandDistrib_".concat(i.to_s)])
-		end
-		return demand
-	end
+  include ActiveModel::Validations
+  
+	attr_accessor :generation_method, :nb_stations, :parking_range_L, :parking_range_U,
+	              :nb_demands, :time_step, :area_lenght_side, :average_car_speed,
+	              :max_trip_distance, :centroid_area_dimension, :centroid_density, 
+	              :morning_rush_time_slot_L, :morning_rush_time_slot_U,	:morning_rush_demand_proportion,
+	              :evening_rush_time_slot_L, :evening_rush_time_slot_U, :evening_rush_demand_proportion,
+	              :time_penalty, :demand
 
+  validates :generation_method, presence: true, inclusion: { in: ['Centroïd', 'Uniform']}
+  validates :nb_stations, numericality: { only_integer: true }, presence: true
+  validates :parking_range_L, numericality: { only_integer: true }, presence: true
+  validates :parking_range_U, numericality: { only_integer: true }, presence: true
+  validates :nb_demands, numericality: { only_integer: true }, presence: true
+  validates :time_step, numericality: { only_integer: true }, presence: true
+  validates :area_lenght_side, numericality: { only_integer: true }, presence: true
+  validates :average_car_speed, numericality: { only_integer: true }, presence: true
+  validates :max_trip_distance, numericality: { only_integer: true }, presence: true
+  validates :centroid_area_dimension, numericality: { only_integer: true }, presence: true
+  validates :centroid_density, numericality: { only_integer: true }, presence: true
+  validates :morning_rush_time_slot_L, numericality: { only_integer: true }, presence: true
+  validates :morning_rush_time_slot_U, numericality: { only_integer: true }, presence: true
+  validates :morning_rush_demand_proportion, numericality: { only_integer: true }, presence: true
+  validates :evening_rush_time_slot_L, numericality: { only_integer: true }, presence: true
+  validates :evening_rush_time_slot_U, numericality: { only_integer: true }, presence: true
+  validates :evening_rush_demand_proportion, numericality: { only_integer: true }, presence: true
+  validates :time_penalty, numericality: true, presence: true
+  validate :validate_demand
+  
+  # Validates the demand inputs
+  def validate_demand
+    (0..23).each do |h|
+      return false if @demand[h].nil?
+    end
+  end
+  
+  
 end

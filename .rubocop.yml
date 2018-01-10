@@ -1,0 +1,11 @@
+Style/Tab:
+  Enabled: false
+  
+Layout/TrailingWhitespace:
+  Enabled: false
+  
+Layout/IndentationWidth:
+  Enabled: false
+  
+Style/RedundantReturn:
+  Enabled: false
