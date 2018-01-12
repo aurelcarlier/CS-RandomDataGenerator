@@ -7,16 +7,20 @@ class Generator
 
   include ActiveModel::Validations
 					 
-	attr_accessor :inputs
+	attr_accessor :inputs, :list_stations, :list_demands
+	
+	validate do
+	  @inputs.valid?
+	end
 	
 	def initialize(gen_inputs)
 	
 		@inputs = gen_inputs
 
-		@demandList = Array.new
-		@stationList = Array.new
-		@stationList_insideCentroid = Array.new
-		@stationList_outsideCentroid = Array.new
+		@list_demands = Array.new
+		@list_stations = Array.new
+		@list_stations_insideCentroid = Array.new
+		@list_stations_outsideCentroid = Array.new
 		
 		# induced parameters
 		@areaLengthSide = @inputs.area_lenght_side
@@ -57,12 +61,12 @@ class Generator
 		
 				if(station.insideCentroid)
 					station.xPos, station.yPos = generateCoords("inside")
-					@stationList_insideCentroid.push(station)
+					@list_stations_insideCentroid.push(station)
 				else
 					station.xPos, station.yPos = generateCoords("outside")
-					@stationList_outsideCentroid.push(station)
+					@list_stations_outsideCentroid.push(station)
 				end
-				@stationList.push(station)
+				@list_stations.push(station)
 				
 			end
 		when 'Uniform'
@@ -90,7 +94,7 @@ class Generator
 				arrivalTime = (rt + travelTime) % @nbTSInOneDay 
 				
 				demandAlreadyExists = false
-				@demandList.each do |d| # if the demand already exists, just increase its internal demand by 1
+				@list_demands.each do |d| # if the demand already exists, just increase its internal demand by 1
 					if(d.sOrigin == station_O && d.sDestination == station_D && d.departureTime_TS == rt)
 						d.increaseDemandBy(1)
 						demandAlreadyExists = true
@@ -98,7 +102,7 @@ class Generator
 					end
 				end
 				unless(demandAlreadyExists) # create a new demand if it does not exist
-					@demandList.push(CS_demand.new(nbCreatedDemands, station_O, station_D, rt, arrivalTime))
+					@list_demands.push(CS_demand.new(nbCreatedDemands, station_O, station_D, rt, arrivalTime))
 					nbCreatedDemands += 1
 				end
 			end
@@ -156,15 +160,15 @@ class Generator
 		station_O, station_D = nil, nil
 		loop do
 			if is_in_period('morning', timeStep)
-				station_O = @stationList_outsideCentroid.sample
-				station_D = @stationList_insideCentroid.sample
+				station_O = @list_stations_outsideCentroid.sample
+				station_D = @list_stations_insideCentroid.sample
 			
 			elsif is_in_period('evening', timeStep)
-				station_O = @stationList_insideCentroid.sample
-				station_D = @stationList_outsideCentroid.sample
+				station_O = @list_stations_insideCentroid.sample
+				station_D = @list_stations_outsideCentroid.sample
 			
 			elsif is_in_period('outsideRushPeriods', timeStep)
-				list = @stationList.sample(2)
+				list = @list_stations.sample(2)
 				station_O = list[0]
 				station_D = list[1]
 			end
@@ -209,6 +213,7 @@ class Generator
 		end
 	end
 	
+	
 	# Convert an hour into a number of time-steps
 	def convertHour2Ts(hour)
 		return Integer(((hour * 60 ) * @nbTSInOneDay) / 1440)
@@ -236,7 +241,7 @@ class Generator
   			xml.randomGeneratedData {
     			xml.parameters(nbStations: @inputs.nb_stations, nbDemands: @inputs.nb_demands)
           xml.stations {
-            @stationList.each do |s|
+            @list_stations.each do |s|
 							xml.station(
 								id: s.id, 
 								xPos: s.xPos, 
@@ -246,7 +251,7 @@ class Generator
             end
           }
   				xml.demands {
-            @demandList.each do |d|
+            @list_demands.each do |d|
   						xml.demand(
 							  id: d.id,
 								idsOrigin: d.sOrigin.id, 
@@ -269,6 +274,7 @@ class Generator
 		index = Integer(timeStep / @nbTSInOneHour)
 		return @demand[index]
 	end
+	
 	
 	# Initialize the demand distribution as a cumulated and normalized distribution
 	def init_demand
